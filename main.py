@@ -1,3 +1,4 @@
+import http.client
 import os
 import re
 import json
@@ -18,8 +19,8 @@ TG_API_HOST = 'api.telegram.org'  # 自建 API 反代地址，供网络环境无
 SCKEY = os.environ["SCKEY"]
 # 这里填Server酱的key，无需推送可不填 示例: SCU646xxxxxxxxdacd6a5dc3f6
 
-#sre24 https://sre24.com/
-SRE24_TOKEN = ''  #填sre24的token
+# ggt1024 https://push.ggt1024.com
+GGT1024_TOKEN = ''  # 填ggt1024的token
 
 PROXIES = {
     "http": "http://127.0.0.1:10808",
@@ -161,12 +162,19 @@ def server_chan():
     else:
         print('Server酱 推送成功')
 
-def sre24():
+
+def ggt1024():
     msg = 'EUserv续费日志\n\n' + desp
-    url = 'https://sre24.com/api/v1/push'
-    rs = requests.post(url, json=dict(token=SRE24_TOKEN, msg=msg)).json()
+    port = 443
+    server = "push.ggt1024.com"
+
+    conn = http.client.HTTPSConnection(host=server, port=port)
+    rqbody = json.dumps(dict(token=GGT1024_TOKEN, msg=msg))
+    conn.request(method="POST", url="/to/", body=rqbody)
+    resp = conn.getresponse()
+    rs = json.loads(resp.read().decode("utf8"))
     assert int(rs["code"] / 100) == 2, rs
-    
+
 if __name__ == "__main__":
     if not USERNAME or not PASSWORD:
         print_("你没有添加任何账户")
@@ -200,6 +208,6 @@ if __name__ == "__main__":
     
     TG_BOT_TOKEN and TG_USER_ID and TG_API_HOST and telegram()
     SCKEY and server_chan()
-    SRE24_TOKEN and sre24()
-    
+    GGT1024_TOKEN and ggt1024()
+
     print('*' * 30)
